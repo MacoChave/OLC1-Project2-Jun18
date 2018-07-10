@@ -1,0 +1,154 @@
+# INSENSITIVE
+# CASTEO IMPLICITO
+# SOBRECARGA DE FUNCIONES
+# LLAMADAS A FUNCIONES
+
+# COMENTARIOS
+
+SIMPLECOMMENT -> '-->' (^)* '\n'
+MULTICOMMENT -> '</' (^)* '/>'
+
+# INT - DECIMAL, BOOLEAN, STRING
+
+TIPO -> 'Decimal'
+	  | 'Booleano'
+	  | 'Texto'
+	  | 'Entero'
+	  | 'Carácter'
+* EN METODOS 'Vacio'
+
+# ARITMETICA, LOGICA, RELACIONAL
+
+E -> E '+' E
+	| E '-' E
+	| E '*' E
+	| E '/' E
+	| E '%' E
+	| E '^' E
+	| E '++'
+	| E '--'
+	| '-' E
+	| '(' E ')'
+	| INVOCAR ';'
+
+ER -> E '==' E
+	| E '!=' E
+	| E '<' E
+	| E '>' E
+	| E '<=' E
+	| E '=>' E
+	| E '~' E
+
+EL -> E '&&' E
+	| E '||' E
+	| '!' E
+	| E
+INVOCAR -> id '(' LIST_ATTR ')'
+LIST_ATTR -> LIST_ATTR ',' ATTR
+		   | ATTR
+
+ATTR -> E | 
+
+# VARIABLES GLOBALES Y LOCALES
+
+VARIABLE -> TIPO LIST_ID ASIGNAR ';'
+LIST_ID -> LIST_ID ',' id
+		 | id
+ASIGNAR -> '=' E
+		 | 
+
+ASIGNACION -> id '=' E
+
+# FUNCION PRINCIPAL METODOS, FUNCIONES CON PARAMETROS Y RETORNO
+
+METODO -> 'Vacio' PROCEDIMIENTO
+PROCEDIMIENTO -> MAIN | VOID
+VOID -> id '(' LIST_PAR ')' '{' LIST_SNTMET '}'
+MAIN -> 'Principal' '(' ')' '{' LIST_SNTMET '}'
+LIST_SNTMET -> LIST_SNTMET SNTMET
+			 | SNTMET
+SNTMET -> IF_M
+		| FOR_M
+		| WHILE_M
+		| DO_WHILE_M
+		| SWITCH_M
+		| VARIABLE
+		| ASIGNACION
+		| MOSTRAR ';'
+		| DIBUJARAST ';'
+		| DIBUJAREXP ';'
+		| DIBUJARTS ';'
+		| 'Romper' ';'
+		| 'Continuar' ';'
+		| 'Retorno' ';'
+LIST_PAR -> LIST_PAR ',' PAR
+		  | PAR
+FUNCION -> TIPO id '(' LIST_PAR ')' '{' LIST_SNTFUNC '}'
+PAR -> TIPO id
+LIST_SNTFUNC -> LIST_SNTFUNC SNTFUNC
+			  | SNTFUNC
+SNTFUNC -> IF_M
+		 | FOR_M
+		 | WHILE_M
+		 | DO_WHILE_M
+		 | SWITCH_M
+		 | VARIABLE
+		 | ASIGNACION
+		 | MOSTRAR ';'
+		 | DIBUJARAST ';'
+		 | DIBUJAREXP ';'
+		 | DIBUJARTS ';'
+		 | 'Romper' ';'
+		 | 'Continuar' ';'
+		 | 'Retorno' E ';'
+
+# SENTENCIAS PROPIAS
+
+MOSTRAR -> 'Mostrar' '(' string LIST_FORMAT ')'
+LIST_FORMAT -> LIST_FORMAT ',' FORMAT
+			 | ',' FORMAT
+
+DIBUJARAST -> 'DibujarAST' '(' id ')'
+
+DIBUJAREXP -> 'DibujarEXP' '(' E ')'
+
+DIBUJARTS -> 'DibujarTS' '(' ')'
+
+# CICLOS, SENTENCIAS DE CONTROL DE FLUJO
+
+IF_M -> 'Es_Verdadero' '(' E ')' '{' LIST_SNTMET '}' ELSE_M
+ELSE_M -> 'Es_falso' '{' LIST_SNTMET '}'
+		| 
+IF_F -> 'Es_Verdadero' '(' E ')' '{' LIST_SNTFUNC '}' ELSE_F
+ELSE_F -> 'Es_falso' '{' LIST_SNTFUNC '}'
+		| 
+
+FOR_M -> 'Para' '(' VARIABLE E E')' '{' LIST_SNTMET '}'
+FOR_F -> 'Para' '(' VARIABLE E E')' '{' LIST_SNTFUNC '}'
+
+WHILE_M -> 'Mientras_que' '(' E ')' '{' LIST_SNTMET '}'
+WHILE_F -> 'Mientras_que' '(' E ')' '{' LIST_SNTFUNC '}'
+
+SWITCH_M -> 'Cambiar_a' '(' E ')' '{' LIST_CASE_M '}'
+LIST_CASE_M -> LIST_CASE_M CASE_M 
+			| CASE_M 
+CASE_M -> 'Valor' E ':' E ';'
+	    | 'No_cumple' ':' E ';'
+SWITCH_F -> 'Cambiar_a' '(' E ')' '{' LIST_CASE_F '}'
+LIST_CASE_F -> LIST_CASE_F CASE_F 
+			| CASE_F
+CASE_F -> 'Valor' E ':' E ';'
+	    | 'No_cumple' ':' E ';'
+
+HASTA_M -> 'Hasta_que' '(' E ')' '{' LIST_SNTMET '}'
+HASTA_F -> 'Hasta_que' '(' E ')' '{' LIST_SNTFUNC '}'
+
+# IMPORTAR ARCHIVOS CRL
+
+IMPORTAR -> 'Importar' RUTA '.clr' ';'
+RUTA -> RUTA '/' id
+	  | id
+
+# DEFINIR INCERTEZA(0.5), RUTA({WORKSPACE}/FILES)
+
+DEFINIR -> 'Definir' RUTA ';'

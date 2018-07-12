@@ -1,0 +1,166 @@
+﻿S 			-> SOURCE
+
+EPS			-> Empty
+
+SOURCE 		-> LIST_HEADER LIST_SENT
+
+LIST_HEADER	-> LIST_HEADER HEADER
+			 | HEADER
+HEADER 		-> IMPORT
+			 | DEFINE
+
+IMPORT 		-> 'Importar' PATH ';'
+PATH 		-> PATH '/' string
+			 | string
+
+DEFINE 		-> 'Definir' VALUE ';'
+VALUE 		-> PATH
+			 | int
+
+LIST_SENT 	-> LIST_SENT SENT
+			 | SENT
+
+SENT 		-> VARIABLE ';' SENT
+			 | METHOD SENT
+			 | FUNCTION SENT
+			 | VARIABLE
+			 | METHOD
+			 | FUNCTION
+
+VARIABLE	-> TIPO LIST_ID ASSIGN ';'
+
+TYPE		-> 'Decimal' | 'Booleano' | 'Texto' | 'Entero' | 'Carácter'
+
+LIST_ID		-> LIST_ID ',' id
+			 | id
+
+ASSIGN		-> '=' EL
+			 | EPS
+
+ASSIGNMENT	-> id '=' EL
+
+METHOD		-> 'Vacio' PROCEDURE
+
+PROCEDURE	-> MAIN | VOID
+
+MAIN		-> 'Principal' '(' ')' '{' LIST_SENT_M '}'
+
+VOID		-> 'id' '(' LIST_PAR ')' '{' LIT_SENT_M '}'
+
+FUNCTION	-> TIPO id '(' LIST_PAR ')' '{' LIST_SENT_F '}'
+
+LIST_PAR 	-> LIST_PAR ',' PAR
+			 | PAR
+
+PAR 		-> TIPO id
+
+LIST_SENT_M -> LIST_SENT_M SENT_M
+			 | SENT_M
+
+SENT_M 		-> IF_M
+			 | FOR_M
+			 | WHILE_M
+			 | DOWHILE_M
+			 | SWITCH_M
+			 | VARIABLE
+			 | ASSIGNMEN
+			 | SHOW ';'
+			 | DRAW_AST ';'
+			 | DRAW_EXP ';'
+			 | DRAW_TS ';'
+			 | 'Romper' ';'
+			 | 'Continuar' ';'
+			 | 'Retorno' ';'
+
+LIST_SENT_F -> LIST_SENT_F SENT_F
+			 | SENT_F
+
+SENT_F 		-> IF_F
+			 | FOR_F
+			 | WHILE_F
+			 | DOWHILE_F
+			 | SWITCH_F
+			 | VARIABLE
+			 | ASSIGNMEN
+			 | SHOW ';'
+			 | DRAW_AST ';'
+			 | DRAW_EXP ';'
+			 | DRAW_TD ';'
+			 | 'Romper' ';'
+			 | 'Continuar' ';'
+			 | 'Retorno' ';'
+
+SHOW		-> 'Mostrar' '(' string FORMAT ')'
+
+FORMAT 		-> FORMAT ',' EL
+			 | ',' EL
+
+DRAW_AST	-> 'DibujarAST' '(' id ')'
+
+DRAW_EXP	-> 'DibujarEXP' '(' EL ')'
+
+DRAW_TD 	-> 'DibujarTS' '(' ')'
+
+IF_M		-> 'Es_Verdadero' '(' EL ')' '{' LIST_SENT_M '}' ELSE_M
+
+ELSE_M		-> 'Es_falso' '{' LIST_SENT_M '}'
+
+IF_F		-> 'Es_Verdadero' '(' EL ')' '{' LIST_SENT_F '}' ELSE_F
+
+ELSE_F		-> 'Es_falso' '{' LIST_SENT_F '}'
+
+FOR_M		-> 'Para' '(' VARIABLE ER E ')' '{' LIST_SENT_M '}'
+
+FOR_F		-> 'Para' '(' VARIABLE ER E ')' '{' LIST_SENT_F '}'
+
+WHILE_M		-> 'Mientras_que' '(' EL ')' '{' LIST_SENT_M '}'
+
+WHILE_F		-> 'Mientras_que' '(' EL ')' '{' LIST_SENT_F '}'
+
+SWITCH_M	-> 'Cambiar_a' '(' EL ')' '{' LIST_CASE_M '}'
+
+LIST_CASE_M -> LIST_CASE_M CASE_M
+			 | CASE_M
+
+CASE_M 		-> 'Valor' E ':' E ';'
+
+SWITCH_F	-> 'Cambiar_a' '(' EL ')' '{' LIST_CASE_F '}'
+
+LIST_CASE_F -> LIST_CASE_F CASE_F
+			 | CASE_F
+
+CASE_F 		-> 'Valor' E ':' E ';'
+
+HASTA_M		-> 'Hasta_que' '(' EL ')' '{' LIST_SENT_M '}'
+
+HASTA_F		-> 'Hasta_que' '(' EL ')' '{' LIST_SENT_F '}'
+
+EL 			-> EL '&&' EL
+			 | EL '||' EL
+			 | '!' EL
+			 | ER
+
+ER 			-> ER '==' ER
+			 | ER '!=' ER
+			 | ER '<' ER
+			 | ER '>' ER
+			 | ER '<=' ER
+			 | ER '>=' ER
+			 | ER '~' ER
+			 | E
+
+E 			-> E '+' E
+			 | E '-' E
+			 | E '*' E
+			 | E '/' E
+			 | E '%' E
+			 | E '^' E
+			 | E '++'
+			 | E '--'
+			 | '-' E
+			 | '(' E ')'
+			 | INVOCAR
+			 | integer
+			 | string
+			 | char
+			 | boolean

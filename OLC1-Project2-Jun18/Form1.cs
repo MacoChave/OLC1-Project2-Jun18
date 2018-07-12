@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using Irony.Parsing;
+using OLC1_Project2_Jun18.BuilderPackage;
 
 namespace OLC1_Project2_Jun18
 {
@@ -10,6 +13,7 @@ namespace OLC1_Project2_Jun18
         private static string PAGE_NAME = "page";
         private int COUNTER = 0;
         private static string FILENAME_DEFAULT = "Nuevo";
+        private ParseTreeNode root;
 
         public Form1()
         {
@@ -27,10 +31,11 @@ namespace OLC1_Project2_Jun18
             {
                 Name = "row" + COUNTER,
                 Dock = DockStyle.Left,
-                Width = (page.Width * 10) / 100,
+                Width = (page.Width * 5) / 100,
                 Parent = page,
                 ForeColor = Color.MediumPurple,
                 Font = new Font("Consolas", 12, FontStyle.Regular),
+                ReadOnly = true,
                 WordWrap = false,
             };
 
@@ -39,7 +44,7 @@ namespace OLC1_Project2_Jun18
                 Name = "box" + COUNTER,
                 Text = text,
                 Dock = DockStyle.Right,
-                Width = (page.Width * 90) / 100,
+                Width = (page.Width * 95) / 100,
                 Parent = page,
                 AcceptsTab = true,
                 ForeColor = Color.MidnightBlue,
@@ -86,6 +91,15 @@ namespace OLC1_Project2_Jun18
 
         private void Box_TextChanged(object sender, EventArgs e)
         {
+            RichTextBox box = (RichTextBox)sender;
+            Control parent = box.Parent;
+            RichTextBox rowCount = (RichTextBox)parent.Controls[0];
+            rowCount.ResetText();
+            var rows = box.Lines.Length;
+
+            for (int i = 0; i < rows; i++)
+                rowCount.Text += i + "\r\n";
+
             getPositionCursor((RichTextBox)sender);
         }
 
@@ -110,7 +124,7 @@ namespace OLC1_Project2_Jun18
             OpenFileDialog ofd = new OpenFileDialog
             {
                 Title = "Seleccionar archivo",
-                Filter = "Source CRL | *.crl",
+                Filter = "Source CLR | *.clr",
                 CheckFileExists = true,
                 CheckPathExists = true
             };
@@ -122,9 +136,9 @@ namespace OLC1_Project2_Jun18
                 createTabPage(ofd.FileName, ofd.SafeFileName, sr.ReadToEnd());
                 sr.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -139,7 +153,7 @@ namespace OLC1_Project2_Jun18
         private void guardarMenuItem_Click(object sender, EventArgs e)
         {
             TabPage currentPage = tabControl.SelectedTab;
-            RichTextBox box = (RichTextBox)currentPage.Controls[0];
+            RichTextBox box = (RichTextBox)currentPage.Controls[1];
             string path = currentPage.Tag.ToString();
 
             if (path.Length < 1)
@@ -156,9 +170,9 @@ namespace OLC1_Project2_Jun18
                     write.Write(box.Text);
                     write.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    throw;
+                    Console.WriteLine(ex.Message);
                 }
             }
         }
@@ -166,7 +180,7 @@ namespace OLC1_Project2_Jun18
         private void guardarTodoMenuItem_Click(object sender, EventArgs e)
         {
             TabPage currentPage = tabControl.SelectedTab;
-            RichTextBox box = (RichTextBox)currentPage.Controls[0];
+            RichTextBox box = (RichTextBox)currentPage.Controls[1];
             // GUARDAR COMO
             saveAs(box, currentPage);
         }
@@ -176,7 +190,7 @@ namespace OLC1_Project2_Jun18
             SaveFileDialog sfd = new SaveFileDialog()
             {
                 Title = "Seleccionar destino",
-                Filter = "Source CRL | *.crl"
+                Filter = "Source CLR | *.clr"
             };
             sfd.ShowDialog();
 
@@ -188,9 +202,9 @@ namespace OLC1_Project2_Jun18
                 currentPage.Tag = sfd.FileName;
                 currentPage.Text = sfd.FileName;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Console.WriteLine(ex.Message);
             }
         }
         
@@ -205,9 +219,9 @@ namespace OLC1_Project2_Jun18
             {
                 tabControl.TabPages.Remove(tabControl.SelectedTab);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -218,9 +232,9 @@ namespace OLC1_Project2_Jun18
                 tabControl.TabPages.Clear();
                 COUNTER = 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -239,12 +253,31 @@ namespace OLC1_Project2_Jun18
          ******************************************************/
         private void compilarToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            TabPage currentPage = tabControl.SelectedTab;
+            RichTextBox box = (RichTextBox)currentPage.Controls[1];
 
+            if (currentPage.Tag.ToString().Length < 1)
+            {
+                MessageBox.Show("Guardar archivo");
+                return;
+            }
+
+            root = Builder.Build(box.Text);
+
+            if (root != null)
+            {
+                MessageBox.Show("Analisis finalizado con éxito");
+                Builder.GenerateImage(root);
+                Process.Start("AST.png");
+            }
+            else
+            {
+                Process.Start("report.html");
+            }
         }
 
         private void astMenuItem_Click(object sender, EventArgs e)
         {
-
         }
 
         private void sintacticoAbstractoMenuItem_Click(object sender, EventArgs e)
